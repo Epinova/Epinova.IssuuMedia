@@ -1,7 +1,8 @@
 # Epinova.IssuuMedia
 Epinova's take on Issuu's media API
 
-## Add registry to Structuremap
+## Usage
+### Add registry to Structuremap
 
 ```
     container.Configure(
@@ -16,3 +17,7 @@ Epinova's take on Issuu's media API
             x.AddRegistry<Epinova.IssuuMedia.MediaRegistry>();
         });
 ```
+
+### Inject contract and use service
+
+Epinova.IssuuMedia.IMediaService describes the service. 
