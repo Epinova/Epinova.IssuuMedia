@@ -93,6 +93,19 @@ namespace Epinova.IssuuMediaTests
         }
 
         [Fact]
+        public async Task GetDocumentEmbeds_ResponseOKWithNoDocuments_ReturnsEmptyList()
+        {
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    "{\"rsp\":{\"_content\":{\"result\":{\"totalCount\":0,\"startIndex\":0,\"pageSize\":10,\"more\":true,\"_content\":[]}},\"stat\":\"ok\"}}")
+            });
+            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(Factory.GetString(), Factory.GetString());
+
+            Assert.Empty(result);
+        }
+
+        [Fact]
         public async Task GetDocuments_InternalServerError_ReturnsEmpty()
         {
             _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.InternalServerError));
@@ -202,6 +215,19 @@ namespace Epinova.IssuuMediaTests
             MediaDocument[] result = await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString());
 
             Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async Task GetDocuments_ResponseOKWithNoDocuments_ReturnsEmptyList()
+        {
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    "{\"rsp\":{\"_content\":{\"result\":{\"totalCount\":0,\"startIndex\":0,\"pageSize\":10,\"more\":true,\"_content\":[]}},\"stat\":\"ok\"}}")
+            });
+            MediaDocument[] result = await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString());
+
+            Assert.Empty(result);
         }
 
         [Fact]
