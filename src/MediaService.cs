@@ -12,7 +12,7 @@ using EPiServer.Logging;
 
 namespace Epinova.IssuuMedia
 {
-    internal class MediaService : RestServiceBase, IMediaService
+    public class MediaService : RestServiceBase, IMediaService
     {
         internal static HttpClient Client;
         private readonly ILogger _log;
@@ -30,7 +30,6 @@ namespace Epinova.IssuuMedia
         }
 
         public override string ServiceName => "IssuuMedia.MediaService";
-
 
         public async Task<MediaDocumentEmbed[]> GetDocumentEmbedsAsync(string apiKey, string apiSecret)
         {
@@ -95,7 +94,6 @@ namespace Epinova.IssuuMedia
 
             return result.ToArray();
         }
-
 
         public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret)
         {
