@@ -12,7 +12,7 @@ using EPiServer.Logging;
 
 namespace Epinova.IssuuMedia
 {
-    internal class MediaService : RestServiceBase, IMediaService
+    public class MediaService : RestServiceBase, IMediaService
     {
         internal static HttpClient Client;
         private readonly ILogger _log;
@@ -28,9 +28,6 @@ namespace Epinova.IssuuMedia
             _log = log;
             _mapper = mapper;
         }
-
-        public override string ServiceName => "IssuuMedia.MediaService";
-
 
         public async Task<MediaDocumentEmbed[]> GetDocumentEmbedsAsync(string apiKey, string apiSecret)
         {
@@ -65,7 +62,7 @@ namespace Epinova.IssuuMedia
 
                 string url = $"?{BuildQueryString(parameters)}";
 
-                HttpResponseMessage responseMessage = await Call(() => Client.GetAsync(url), true);
+                HttpResponseMessage responseMessage = await CallAsync(() => Client.GetAsync(url), true);
 
                 if (responseMessage == null || !responseMessage.IsSuccessStatusCode)
                 {
@@ -73,7 +70,7 @@ namespace Epinova.IssuuMedia
                     continue;
                 }
 
-                ResponseRootDto<ResponseDocumentEmbedContentDto> dto = await ParseJson<ResponseRootDto<ResponseDocumentEmbedContentDto>>(responseMessage);
+                ResponseRootDto<ResponseDocumentEmbedContentDto> dto = await ParseJsonAsync<ResponseRootDto<ResponseDocumentEmbedContentDto>>(responseMessage);
 
                 if (dto.HasError || dto.rsp == null || !dto.rsp.stat.Equals("ok", StringComparison.OrdinalIgnoreCase))
                 {
@@ -95,7 +92,6 @@ namespace Epinova.IssuuMedia
 
             return result.ToArray();
         }
-
 
         public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret)
         {
@@ -121,7 +117,7 @@ namespace Epinova.IssuuMedia
 
             string url = $"?{BuildQueryString(parameters)}";
 
-            HttpResponseMessage responseMessage = await Call(() => Client.GetAsync(url), true);
+            HttpResponseMessage responseMessage = await CallAsync(() => Client.GetAsync(url), true);
 
             if (responseMessage == null || !responseMessage.IsSuccessStatusCode)
             {
@@ -129,7 +125,7 @@ namespace Epinova.IssuuMedia
                 return new MediaDocument[0];
             }
 
-            ResponseRootDto<ResponseDocumentContentDto> dto = await ParseJson<ResponseRootDto<ResponseDocumentContentDto>>(responseMessage);
+            ResponseRootDto<ResponseDocumentContentDto> dto = await ParseJsonAsync<ResponseRootDto<ResponseDocumentContentDto>>(responseMessage);
 
             if (dto.HasError || dto.rsp == null || !dto.rsp.stat.Equals("ok", StringComparison.OrdinalIgnoreCase))
             {
