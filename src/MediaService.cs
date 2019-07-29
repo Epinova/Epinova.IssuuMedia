@@ -14,14 +14,9 @@ namespace Epinova.IssuuMedia
 {
     public class MediaService : RestServiceBase, IMediaService
     {
-        internal static HttpClient Client;
+        internal static HttpClient Client = new HttpClient { BaseAddress = new Uri("https://api.issuu.com/1_0/") };
         private readonly ILogger _log;
         private readonly IMapper _mapper;
-
-        static MediaService()
-        {
-            Client = new HttpClient { BaseAddress = new Uri("https://api.issuu.com/1_0/") };
-        }
 
         public MediaService(ILogger log, IMapper mapper) : base(log)
         {
