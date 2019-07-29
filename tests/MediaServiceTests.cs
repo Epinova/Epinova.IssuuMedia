@@ -26,6 +26,72 @@ namespace Epinova.IssuuMediaTests
             _service = new MediaService(_logMock.Object, mapperConfiguration.CreateMapper());
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiKey_DoesNotCallAPI(string apiKey)
+        {
+            await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
+
+            Assert.Equal(0, _messageHandler.CallCount());
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiKey_LogWarning(string apiKey)
+        {
+            await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
+
+            _logMock.VerifyLog(Level.Warning, "Missing API key and/or secret", Times.Once());
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiKey_ReturnsEmptyList(string apiKey)
+        {
+            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
+
+            Assert.Empty(result);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiSecret_DoesNotCallAPI(string apiSecret)
+        {
+            await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
+
+            Assert.Equal(0, _messageHandler.CallCount());
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiSecret_LogsWarning(string apiSecret)
+        {
+            await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
+
+            _logMock.VerifyLog(Level.Warning, "Missing API key and/or secret", Times.Once());
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocumentEmbeds_MissingApiSecret_ReturnsEmptyList(string apiSecret)
+        {
+            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
+
+            Assert.Empty(result);
+        }
+
         [Fact]
         public async Task GetDocuments_InternalServerError_ReturnsEmpty()
         {
@@ -39,13 +105,23 @@ namespace Epinova.IssuuMediaTests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
+        public async Task GetDocuments_MissingApiKey_DoesNotCallAPI(string apiKey)
+        {
+            await _service.GetDocumentsAsync(apiKey, Factory.GetString());
+
+            Assert.Equal(0, _messageHandler.CallCount());
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
         public async Task GetDocuments_MissingApiKey_LogWarning(string apiKey)
         {
             await _service.GetDocumentsAsync(apiKey, Factory.GetString());
 
             _logMock.VerifyLog(Level.Warning, "Missing API key and/or secret", Times.Once());
         }
-
 
         [Theory]
         [InlineData(null)]
@@ -56,6 +132,17 @@ namespace Epinova.IssuuMediaTests
             MediaDocument[] result = await _service.GetDocumentsAsync(apiKey, Factory.GetString());
 
             Assert.Empty(result);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task GetDocuments_MissingApiSecret_DoesNotCallAPI(string apiSecret)
+        {
+            await _service.GetDocumentsAsync(Factory.GetString(), apiSecret);
+
+            Assert.Equal(0, _messageHandler.CallCount());
         }
 
         [Theory]
@@ -103,7 +190,6 @@ namespace Epinova.IssuuMediaTests
 
             Assert.Empty(result);
         }
-
 
         [Fact]
         public async Task GetDocuments_ResponseOK_ReturnsDocumentList()
