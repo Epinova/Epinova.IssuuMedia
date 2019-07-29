@@ -1,17 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epinova.IssuuMedia", "src\Epinova.IssuuMedia.csproj", "{F27DF6B8-19CB-4478-AA29-9C5874CC1EDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epinova.IssuuMedia", "src\Epinova.IssuuMedia.csproj", "{F27DF6B8-19CB-4478-AA29-9C5874CC1EDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epinova.IssuuMediaTests", "tests\Epinova.IssuuMediaTests.csproj", "{89DC8DBF-84F7-45D7-BDD5-DCCE465ABEBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epinova.IssuuMediaTests", "tests\Epinova.IssuuMediaTests.csproj", "{89DC8DBF-84F7-45D7-BDD5-DCCE465ABEBA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{A7E3DECF-B10C-4D72-A29D-52286ADEDD98}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
 		LICENSE = LICENSE
+		nuget.config = nuget.config
 		README.md = README.md
 	EndProjectSection
 EndProject
