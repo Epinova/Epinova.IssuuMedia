@@ -182,6 +182,20 @@ namespace Epinova.IssuuMediaTests
         }
 
         [Fact]
+        public async Task GetDocuments_ResponseOKWithNoDocuments_LogsInfoMessage()
+        {
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    "{\"rsp\":{\"_content\":{\"result\":{\"totalCount\":0,\"startIndex\":0,\"pageSize\":10,\"more\":true,\"_content\":[]}},\"stat\":\"ok\"}}")
+            });
+            string apiKey = Factory.GetString();
+            await _service.GetDocumentsAsync(apiKey, Factory.GetString());
+
+            _logMock.VerifyLog(Level.Information, $"Query returned no results. Page size 10, start index 0, API key {apiKey}", Times.Once());
+        }
+
+        [Fact]
         public async Task GetDocuments_ResponseOKWithNoDocuments_ReturnsEmptyList()
         {
             _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK)

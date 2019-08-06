@@ -67,7 +67,7 @@ namespace Epinova.IssuuMedia
 
             if (dto.rsp?.content?.result?.content == null || !dto.rsp.content.result.content.Any())
             {
-                _log.Warning(new { message = "Query returned no result.", dto, apiKey });
+                _log.Information($"Query returned no results. Page size {pageSize}, start index {startIndex}, API key {apiKey}");
                 return new MediaDocument[0];
             }
 
