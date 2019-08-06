@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,12 +12,15 @@ namespace Epinova.IssuuMediaTests
         private Exception _expectedException;
         private HttpResponseMessage _expectedResponse;
 
+        public List<Uri> CalledUrls { get; set; } = new List<Uri>();
+
+
         public int CallCount()
         {
             return _callCount;
         }
 
-        public void SendAsyncReturns(HttpResponseMessage result)
+        public void GetAsyncReturns(HttpResponseMessage result)
         {
             _expectedResponse = result;
         }
@@ -26,7 +30,7 @@ namespace Epinova.IssuuMediaTests
             _expectedException = exception;
         }
 
-        public void GetAsyncReturns(HttpResponseMessage result)
+        public void SendAsyncReturns(HttpResponseMessage result)
         {
             _expectedResponse = result;
         }
@@ -38,6 +42,7 @@ namespace Epinova.IssuuMediaTests
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            CalledUrls.Add(request.RequestUri);
             _callCount++;
             if (_expectedException != null)
                 throw _expectedException;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -26,83 +27,46 @@ namespace Epinova.IssuuMediaTests
             _service = new MediaService(_logMock.Object, mapperConfiguration.CreateMapper());
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiKey_DoesNotCallAPI(string apiKey)
+        [Fact]
+        public async Task GetDocuments_CustomPageSize_AddsCorrectPageSizeToUrlParamList()
         {
-            await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
+            int pageSize = Factory.GetInteger();
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK));
+            await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString(), pageSize: pageSize);
+            Uri calledUrl = _messageHandler.CalledUrls.First();
 
-            Assert.Equal(0, _messageHandler.CallCount());
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiKey_LogWarning(string apiKey)
-        {
-            await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
-
-            _logMock.VerifyLog(Level.Warning, "Missing API key and/or secret", Times.Once());
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiKey_ReturnsEmptyList(string apiKey)
-        {
-            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(apiKey, Factory.GetString());
-
-            Assert.Empty(result);
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiSecret_DoesNotCallAPI(string apiSecret)
-        {
-            await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
-
-            Assert.Equal(0, _messageHandler.CallCount());
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiSecret_LogsWarning(string apiSecret)
-        {
-            await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
-
-            _logMock.VerifyLog(Level.Warning, "Missing API key and/or secret", Times.Once());
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task GetDocumentEmbeds_MissingApiSecret_ReturnsEmptyList(string apiSecret)
-        {
-            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(Factory.GetString(), apiSecret);
-
-            Assert.Empty(result);
+            Assert.Contains($"pageSize={pageSize}", calledUrl.Query);
         }
 
         [Fact]
-        public async Task GetDocumentEmbeds_ResponseOKWithNoDocuments_ReturnsEmptyList()
+        public async Task GetDocuments_CustomStartIndex_AddsCorrectStartIndexToUrlParamList()
         {
-            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(
-                    "{\"rsp\":{\"_content\":{\"result\":{\"totalCount\":0,\"startIndex\":0,\"pageSize\":10,\"more\":true,\"_content\":[]}},\"stat\":\"ok\"}}")
-            });
-            MediaDocumentEmbed[] result = await _service.GetDocumentEmbedsAsync(Factory.GetString(), Factory.GetString());
+            int startIndex = Factory.GetInteger();
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK));
+            await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString(), startIndex: startIndex);
+            Uri calledUrl = _messageHandler.CalledUrls.First();
 
-            Assert.Empty(result);
+            Assert.Contains($"startIndex={startIndex}", calledUrl.Query);
+        }
+
+        [Fact]
+        public async Task GetDocuments_DefaultPageSize_IsTen()
+        {
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK));
+            await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString());
+            Uri calledUrl = _messageHandler.CalledUrls.First();
+
+            Assert.Contains("pageSize=10", calledUrl.Query);
+        }
+
+        [Fact]
+        public async Task GetDocuments_DefaultStartIndex_IsZero()
+        {
+            _messageHandler.SendAsyncReturns(new HttpResponseMessage(HttpStatusCode.OK));
+            await _service.GetDocumentsAsync(Factory.GetString(), Factory.GetString());
+            Uri calledUrl = _messageHandler.CalledUrls.First();
+
+            Assert.Contains("startIndex=0", calledUrl.Query);
         }
 
         [Fact]

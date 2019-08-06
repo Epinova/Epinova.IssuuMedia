@@ -24,71 +24,7 @@ namespace Epinova.IssuuMedia
             _mapper = mapper;
         }
 
-        public async Task<MediaDocumentEmbed[]> GetDocumentEmbedsAsync(string apiKey, string apiSecret)
-        {
-            if (String.IsNullOrWhiteSpace(apiKey) || String.IsNullOrWhiteSpace(apiSecret))
-            {
-                _log.Warning("Missing API key and/or secret");
-                return new MediaDocumentEmbed[0];
-            }
-
-            MediaDocument[] documents = await GetDocumentsAsync(apiKey, apiSecret);
-            if (!documents.Any())
-            {
-                _log.Information($"No documents found using API key {apiKey}");
-                return new MediaDocumentEmbed[0];
-            }
-
-            var result = new List<MediaDocumentEmbed>();
-
-            foreach (MediaDocument document in documents)
-            {
-                var parameters = new SortedDictionary<string, string>
-                {
-                    { "apiKey", apiKey },
-                    { "action", "issuu.document_embeds.list" },
-                    { "format", "json" },
-                    { "documentId", document.DocumentId },
-                    { "embedSortBy", nameof(MediaDocumentEmbedDto.created) },
-                    { "resultOrder", "desc" },
-                    { "pageSize", "10" },
-                };
-                parameters.Add("signature", CalculateMd5Hash(apiSecret, parameters));
-
-                string url = $"?{BuildQueryString(parameters)}";
-
-                HttpResponseMessage responseMessage = await CallAsync(() => Client.GetAsync(url), true);
-
-                if (responseMessage == null || !responseMessage.IsSuccessStatusCode)
-                {
-                    _log.Error($"Query failed. Service response was NULL or status code not 200. API key {apiKey}");
-                    continue;
-                }
-
-                ResponseRootDto<ResponseDocumentEmbedContentDto> dto = await ParseJsonAsync<ResponseRootDto<ResponseDocumentEmbedContentDto>>(responseMessage);
-
-                if (dto.HasError || dto.rsp == null || !dto.rsp.stat.Equals("ok", StringComparison.OrdinalIgnoreCase))
-                {
-                    _log.Error(new { message = "Query failed.", dto, apiKey });
-                    continue;
-                }
-
-                if (dto.rsp?.content?.result?.content == null || !dto.rsp.content.result.content.Any())
-                {
-                    _log.Warning(new { message = "Query returned no result.", dto, apiKey });
-                    continue;
-                }
-
-                var embeds = _mapper.Map<List<MediaDocumentEmbed>>(dto.rsp.content.result.content.Select(c => c.documentEmbed));
-                embeds.ForEach(embed => embed.Document = document);
-
-                result.AddRange(embeds);
-            }
-
-            return result.ToArray();
-        }
-
-        public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret)
+        public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret, int pageSize=10, int startIndex = 0)
         {
             if (String.IsNullOrWhiteSpace(apiKey) || String.IsNullOrWhiteSpace(apiSecret))
             {
@@ -105,7 +41,8 @@ namespace Epinova.IssuuMedia
                 { "format", "json" },
                 { "documentSortBy", nameof(MediaDocumentDto.publishDate) },
                 { "resultOrder", "desc" },
-                { "pageSize", "10" },
+                { "startIndex", startIndex.ToString() },
+                { "pageSize", pageSize.ToString() },
                 { "responseParams", MediaDocumentDto.GetResponseParameters() },
             };
             parameters.Add("signature", CalculateMd5Hash(apiSecret, parameters));
