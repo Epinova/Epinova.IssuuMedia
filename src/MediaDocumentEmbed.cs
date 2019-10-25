@@ -14,6 +14,8 @@ namespace Epinova.IssuuMedia
         /// </summary>
         public string DataConfigId { get; set; }
 
+        public MediaDocument Document { get; set; }
+
         /// <summary>
         /// Unique identifier of the document shown by the embed. If document is deleted or removed after embed was created the field will be omitted from response
         /// </summary>
@@ -38,7 +40,5 @@ namespace Epinova.IssuuMedia
         /// Width in pixels of the widget when embedded in webpage
         /// </summary>
         public int Width { get; set; }
-
-        public MediaDocument Document { get; set; }
     }
 }

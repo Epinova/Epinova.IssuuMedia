@@ -24,7 +24,7 @@ namespace Epinova.IssuuMedia
             _mapper = mapper;
         }
 
-        public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret, int pageSize=10, int startIndex = 0)
+        public async Task<MediaDocument[]> GetDocumentsAsync(string apiKey, string apiSecret, int pageSize = 10, int startIndex = 0)
         {
             if (String.IsNullOrWhiteSpace(apiKey) || String.IsNullOrWhiteSpace(apiSecret))
             {
